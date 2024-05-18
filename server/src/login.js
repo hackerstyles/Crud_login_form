@@ -93,5 +93,42 @@ router.post('/login', async (req, res) => {
 });
 
 
+router.get('/getuserDetails',async(req,res)=>{
+    const userDB = await user.find()
+
+    return res.send(userDB)
+}) ;
+
+router.put('/editUser/:id', async (req, res) => {
+    const { id } = req.params;
+    const { firstName, lastName, userName, emailID } = req.body;
+
+    try {
+        const updatedUser = await user.findByIdAndUpdate(id, { firstName, lastName, userName, emailID }, { new: true });
+        if (!updatedUser) {
+            return res.status(404).json({ status: false, msg: "User not found" });
+        }
+        res.json({ status: true, msg: "User updated successfully", data: updatedUser });
+    } catch (error) {
+        res.status(500).json({ status: false, msg: "Internal server error" });
+    }
+});
+
+
+router.delete('/deleteUser/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedUser = await user.findByIdAndDelete(id);
+        if (!deletedUser) {
+            return res.status(404).json({ status: false, msg: "User not found" });
+        }
+        res.json({ status: true, msg: "User deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ status: false, msg: "Internal server error" });
+    }
+});
+
+
 
 module.exports = router;
